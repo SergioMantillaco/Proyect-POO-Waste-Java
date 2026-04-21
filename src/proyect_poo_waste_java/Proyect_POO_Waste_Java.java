@@ -5,6 +5,7 @@ public class Proyect_POO_Waste_Java {
         System.out.println("hello world");
         System.out.println("probando cambiosss");
         System.out.println("dia dos testeando cambios,");
+        System.out.println("test numero 3");
     }
     
 }
