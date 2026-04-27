@@ -7,6 +7,7 @@ public class JuegoPrincipal {
         System.out.println("dia dos testeando cambios,");
         System.out.println("test numero 3");
         System.out.println("probando repositorio clonado");
+        System.out.println("probando cambios desde el repositorio de github");
     }
     
 }
