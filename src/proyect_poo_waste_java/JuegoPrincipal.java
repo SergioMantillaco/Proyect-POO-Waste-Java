@@ -12,6 +12,7 @@ public class JuegoPrincipal {
         System.out.println("probando");
         System.out.println("prueba tutorial");
         System.out.println("prueba de descarga");
+        System.out.println("prueba descarga 2");
     }
     
 }
