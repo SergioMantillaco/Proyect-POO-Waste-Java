@@ -4,15 +4,16 @@ public enum Velocidad_Por_Dificultad {
     Facil(1),
     Medio(1.5),
     dificil(3);
-    
-    private final double valor;
+    private double Velocidad;
+    private final double Valor;
 
     private Velocidad_Por_Dificultad(double valor) {
-        this.valor = valor;
+        this.Valor = valor;
     }
 
-    public double getVelocidad() {
-        return valor;
+    public double getMultiplicadorVelocidad(double Velocidad) {
+        this.Velocidad = Velocidad;
+        return Velocidad = Velocidad * Valor;
     }
     
     
