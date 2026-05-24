@@ -1,0 +1,8 @@
+```text
+   # NetBeans específicos
+   nbproject/private/
+   build/
+   nbbuild/
+   dist/
+   nbdist/
+   .nb-gradle/
