@@ -5,14 +5,14 @@ public enum Velocidad_Por_Dificultad {
     MEDIO(1.5),
     DIFICIL(3);
     private double Velocidad;
-    private final double ValorMultiplicador;
+    private final double dificultadActual;
 
     private Velocidad_Por_Dificultad(double valor) {
-        this.ValorMultiplicador = valor;
+        this.dificultadActual = valor;
     }
 
     public double calcularVelocidadCaida(double velocidadBase) {
-        return velocidadBase * this.ValorMultiplicador;
+        return velocidadBase * this.dificultadActual;
     }
     
     }
