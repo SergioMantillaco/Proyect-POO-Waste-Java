@@ -1,22 +1,21 @@
 package proyect_poo_waste_java;
 public enum Velocidad_Por_Dificultad {
     
-    Facil(1),
-    Medio(1.5),
-    dificil(3);
+    FACIL(1),
+    MEDIO(1.5),
+    DIFICIL(3);
     private double Velocidad;
-    private final double Valor;
+    private final double ValorMultiplicador;
 
     private Velocidad_Por_Dificultad(double valor) {
-        this.Valor = valor;
+        this.ValorMultiplicador = valor;
     }
 
-    public double getMultiplicadorVelocidad(double Velocidad) {
-        this.Velocidad = Velocidad;
-        return Velocidad = Velocidad * Valor;
+    public double calcularVelocidadCaida(double velocidadBase) {
+        return velocidadBase * this.ValorMultiplicador;
+    }
+    
     }
     
     
     
-    
-}
