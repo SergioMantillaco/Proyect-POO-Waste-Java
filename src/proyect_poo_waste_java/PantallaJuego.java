@@ -150,6 +150,8 @@ public class PantallaJuego extends JPanel implements ActionListener, KeyListener
                         mostrarMensaje("-1 VIDA!", COLOR_ROJO);
                         generarParticulas(ANCHO / 2, ALTO - 60, COLOR_ROJO, 15);
                     }
+                    r.setActivo(false); 
+                    aEliminar.add(r);
                 }
             }
             gestor.getResiduosActivos().removeAll(aEliminar);
@@ -570,14 +572,12 @@ public class PantallaJuego extends JPanel implements ActionListener, KeyListener
         int code = e.getKeyCode();
 
         if (estadoActual == EstadoJuego.MENU) {
-            if (code == KeyEvent.VK_LEFT || code == KeyEvent.VK_A) {
-                // Mover selección a la izquierda
+            if (code == KeyEvent.VK_LEFT) {
                 dificultadSeleccionada = Math.max(0, dificultadSeleccionada - 1);
-            } else if (code == KeyEvent.VK_RIGHT || code == KeyEvent.VK_D) {
-                // Mover selección a la derecha
+            } else if (code == KeyEvent.VK_RIGHT) {
                 dificultadSeleccionada = Math.min(2, dificultadSeleccionada + 1);
             } else if (code == KeyEvent.VK_ENTER) {
-                // Iniciar partida con la dificultad seleccionada visualmente
+                // Iniciar partida
                 Velocidad_Por_Dificultad dif = Velocidad_Por_Dificultad.values()[dificultadSeleccionada];
                 iniciarPartida(dif);
             } else if (code == KeyEvent.VK_BACK_SPACE) {
@@ -587,6 +587,7 @@ public class PantallaJuego extends JPanel implements ActionListener, KeyListener
         }
 
         if (estadoActual == EstadoJuego.JUGANDO) {
+            // Aquí sí mantenemos la A y la D junto con las flechas para mover al personaje
             if (code == KeyEvent.VK_LEFT  || code == KeyEvent.VK_A) teclaIzquierda = true;
             if (code == KeyEvent.VK_RIGHT || code == KeyEvent.VK_D) teclaDerecha   = true;
         }
