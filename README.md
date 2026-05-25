@@ -1,7 +1,8 @@
 # Proyect-POO-Waste-Java
 UIS group project:
 
-<img width="1461" height="1252" alt="image" src="https://github.com/user-attachments/assets/17596328-e782-45a3-85fb-b2abea23a329" />
+<img width="1408" height="1199" alt="597453088-17596328-e782-45a3-85fb-b2abea23a329" src="https://github.com/user-attachments/assets/de4432fe-1d26-4f15-b6cd-14fdcc1c4570" />
+
 
 UML: https://correouisedu-my.sharepoint.com/:u:/g/personal/andres2252220_correo_uis_edu_co/IQAFj295lPQCSLLWr2yzltbbAX8lyI53BGJMs0Qoce-Wfx0?e=DvrvK8)
 
