@@ -17,7 +17,7 @@ public class GestorResiduos {
 
     // Control de generacion
     private int contadorFrames        = 0;
-    private int intervaloGeneracion   = 90; // cada cuantos frames cae un nuevo residuo
+    private int intervaloGeneracion   = 60; // cada cuantos frames cae un nuevo residuo
     private int nivel                 = 1;
 
     public GestorResiduos(int anchoPantalla, Velocidad_Por_Dificultad dificultad) {
