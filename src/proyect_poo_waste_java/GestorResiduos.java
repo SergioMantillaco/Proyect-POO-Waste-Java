@@ -14,17 +14,30 @@ public class GestorResiduos {
     private Velocidad_Por_Dificultad   dificultad;
     private Random                     random;
     private int                        anchoPantalla;
+    private Residuo residuoObjetivo;
 
     // Control de generacion
     private int contadorFrames        = 0;
     private int intervaloGeneracion   = 60; // cada cuantos frames cae un nuevo residuo
     private int nivel                 = 1;
 
-    public GestorResiduos(int anchoPantalla, Velocidad_Por_Dificultad dificultad) {
+public GestorResiduos(int anchoPantalla, Velocidad_Por_Dificultad dificultad) {
         this.anchoPantalla   = anchoPantalla;
         this.dificultad      = dificultad;
         this.residuosActivos = new ArrayList<>();
         this.random          = new Random();
+        
+        cambiarObjetivoAleatorio();
+    }
+    
+    //este nuevo metodo elige un objetivo al azar
+    public void cambiarObjetivoAleatorio() {
+        int tipo = random.nextInt(3);
+        switch (tipo) {
+            case 0:  this.residuoObjetivo = new Papel(0, 0);    break;
+            case 1:  this.residuoObjetivo = new Plastico(0, 0); break;
+            default: this.residuoObjetivo = new Vidrio(0, 0);   break;
+        }
     }
 
     /**
@@ -77,16 +90,24 @@ public class GestorResiduos {
         }
         residuosActivos.add(nuevoResiduo);
     }
-
+    
     /**
      * Devuelve el tipo de residuo que el jugador debe atrapar ahora.
      * (El primer residuo activo visible indica el objetivo).
      */
+    
+    /*
     public Residuo obtenerObjetivoActual() {
         for (Residuo r : residuosActivos) {
             if (r.isActivo()) return r;
         }
         return null;
+    } */
+    
+    
+   
+    public Residuo obtenerObjetivoActual() {
+        return this.residuoObjetivo; 
     }
 
     public List<Residuo>  getResiduosActivos()  { return residuosActivos; }
