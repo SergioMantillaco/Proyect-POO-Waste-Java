@@ -47,7 +47,7 @@ public class Papel extends Residuo {
         }
 
         // Renderizado de la etiqueta de texto flotante (HUD integrado)
-        dibujarLabel(g2d, "PAPEL", COLOR_PAPEL);
+       // dibujarLabel(g2d, "PAPEL", COLOR_PAPEL);
     }
 
     @Override

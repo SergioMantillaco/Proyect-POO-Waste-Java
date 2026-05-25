@@ -45,7 +45,7 @@ public class Vidrio extends Residuo {
         }
 
         // Renderizado de la etiqueta de texto flotante (HUD integrado)
-        dibujarLabel(g2d, "VIDRIO", COLOR_VIDRIO);
+        //dibujarLabel(g2d, "VIDRIO", COLOR_VIDRIO);
     }
 
     @Override
