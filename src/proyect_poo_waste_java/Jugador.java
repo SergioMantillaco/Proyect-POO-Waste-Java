@@ -56,7 +56,7 @@ public class Jugador {
         }
         this.residuosFallados++;
     }
-
+    
     /**
      * Verifica si el jugador sigue vivo.
      */

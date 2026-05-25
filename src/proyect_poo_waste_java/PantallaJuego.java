@@ -127,21 +127,38 @@ public class PantallaJuego extends JPanel implements ActionListener, KeyListener
                     continue;
                 }
 
-                // Colision con canasta
-                if (r.colisionaCon(canasta)) {
-                    // Atrapo el residuo que le indicaban?
-                    if (r.getTipoNombre().equals(canasta.getTipoObjetivo())) {
-                        jugador.sumarPuntos(10);
-                        mostrarMensaje("+10 PUNTOS!", COLOR_VERDE);
-                        generarParticulas((int)r.getX(), (int)r.getY(), COLOR_VERDE, 12);
-                    } else {
-                        // Atrapo el tipo equivocado: no le suma pero tampoco le resta
-                        mostrarMensaje("Tipo incorrecto...", COLOR_AMARILLO);
-                        generarParticulas((int)r.getX(), (int)r.getY(), COLOR_AMARILLO, 6);
-                    }
-                    r.setActivo(false);
-                    aEliminar.add(r);
-                }
+            // ... dentro de tu ciclo for de colisiones ...
+
+            // --- CORRECCIÓN AQUÍ ---
+            // Obtenemos el objetivo actual
+            String objetivoActual = canasta.getTipoObjetivo();
+
+            // Solo verificamos colisiones si tenemos un objetivo válido (no nulo ni vacío)
+            if (objetivoActual != null && !objetivoActual.isEmpty()) {
+    
+            // Colision con canasta
+            if (r.colisionaCon(canasta)) {
+        
+             // Verificamos si es el correcto
+             if (r.getTipoNombre().equals(objetivoActual)) {
+            jugador.sumarPuntos(10);
+            mostrarMensaje("+10 PUNTOS!", COLOR_VERDE);
+            generarParticulas((int)r.getX(), (int)r.getY(), COLOR_VERDE, 12);
+            gestor.cambiarObjetivoAleatorio(); // Cambia el objetivo al acertar
+            } else {
+            // LÓGICA DE PENALIZACIÓN
+            jugador.perderVida();
+            mostrarMensaje("¡ERROR! -1 VIDA", COLOR_ROJO);
+            generarParticulas((int)r.getX(), (int)r.getY(), COLOR_ROJO, 10);
+            // IMPORTANTE: Si fallas, también deberías cambiar el objetivo 
+            // o eliminar el residuo para que no siga restando vidas en el siguiente frame
+            gestor.cambiarObjetivoAleatorio(); 
+             }
+        
+                 r.setActivo(false);
+                aEliminar.add(r);
+                 }
+                                                                                }
 
                 // Residuo objetivo cayo al suelo sin ser atrapado
                 if (r.getY() > ALTO - 40 && !r.isActivo() == false) {
@@ -149,6 +166,8 @@ public class PantallaJuego extends JPanel implements ActionListener, KeyListener
                         jugador.perderVida();
                         mostrarMensaje("-1 VIDA!", COLOR_ROJO);
                         generarParticulas(ANCHO / 2, ALTO - 60, COLOR_ROJO, 15);
+                        gestor.cambiarObjetivoAleatorio();
+                        
                     }
                     r.setActivo(false); 
                     aEliminar.add(r);
