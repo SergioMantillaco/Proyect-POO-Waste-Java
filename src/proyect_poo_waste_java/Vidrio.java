@@ -6,17 +6,13 @@ import java.awt.RenderingHints;
 import javax.swing.ImageIcon;
 import java.net.URL;
 
-/**
- * Subclase concreta de Residuo que representa VIDRIO.
- * Aplica HERENCIA y POLIMORFISMO.
- */
 public class Vidrio extends Residuo {
 
     private static final Color COLOR_VIDRIO = new Color(100, 220, 140);
 
     public Vidrio(double posicionx, double posiciony) {
         super(posicionx, posiciony);
-        this.velocidadBase = 2.8; // El vidrio es mas pesado, cae mas rapido
+        this.velocidadBase = 2.8; 
     }
 
     @Override
@@ -31,21 +27,18 @@ public class Vidrio extends Residuo {
         int rx = (int) posicionx;
         int ry = (int) posiciony;
 
-        // Carga y desacoplamiento del componente visual (Sprite)
         URL rutaImagen = getClass().getResource("/Imagenes/vidrio.png");
         
         if (rutaImagen != null) {
             ImageIcon spriteVidrio = new ImageIcon(rutaImagen);
             g2d.drawImage(spriteVidrio.getImage(), rx, ry, (int)ancho, (int)alto, null);
         } else {
-            // Mecanismo de contingencia visual ante ausencia del recurso en memoria
             g2d.setColor(Color.RED);
             g2d.fillRect(rx, ry, (int)ancho, (int)alto);
             System.err.println("Error de Recursos: No se localizó /Imagenes/vidrio.png");
         }
 
-        // Renderizado de la etiqueta de texto flotante (HUD integrado)
-        //dibujarLabel(g2d, "VIDRIO", COLOR_VIDRIO);
+        
     }
 
     @Override

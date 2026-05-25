@@ -8,49 +8,35 @@ import java.util.List;
 import java.util.Random;
 import javax.swing.*;
 
-/**
- * Panel principal del juego. Maneja el Game Loop y el renderizado.
- * Integra todas las clases del sistema bajo el patron MVC simplificado.
- */
 public class PantallaJuego extends JPanel implements ActionListener, KeyListener {
 
-    // --- Constantes ---
     private static final int ANCHO  = 700;
     private static final int ALTO   = 600;
     private static final int FPS    = 60;
 
-    // --- Estado del juego ---
     private EstadoJuego estadoActual = EstadoJuego.MENU;
 
-    // --- Objetos de juego ---
     private Jugador        jugador;
     private Canasta        canasta;
     private GestorResiduos gestor;
 
-    // --- Control de teclas ---
     private boolean teclaIzquierda = false;
     private boolean teclaDerecha   = false;
 
-    // --- Timer del game loop ---
     private Timer gameLoop;
 
-    // --- Input del menu ---
     private String inputAlias = "";
     private boolean cursorVisible = true;
     private int     contadorCursor = 0;
-    private int     dificultadSeleccionada = 0; // 0=FACIL, 1=MEDIO, 2=DIFICIL
+    private int     dificultadSeleccionada = 0; 
     
-
-    // --- Feedback visual ---
     private String  mensajeFeedback    = "";
     private Color   colorFeedback      = Color.WHITE;
     private int     contadorFeedback   = 0;
     private boolean mostrarFeedback    = false;
 
-    // --- Partículas de efecto ---
     private List<Particula> particulas = new ArrayList<>();
 
-    // --- Colores del tema ---
     private static final Color COLOR_BG_DARK    = new Color(10, 18, 30);
     private static final Color COLOR_BG_MID     = new Color(15, 28, 45);
     private static final Color COLOR_VERDE       = new Color(60, 220, 120);
@@ -59,7 +45,6 @@ public class PantallaJuego extends JPanel implements ActionListener, KeyListener
     private static final Color COLOR_AMARILLO    = new Color(255, 220, 60);
     private static final Color COLOR_ACENTO      = new Color(80, 180, 255);
 
-    // Clase interna para particulas de efecto
     private static class Particula {
         double x, y, vx, vy;
         Color  color;
@@ -79,7 +64,6 @@ public class PantallaJuego extends JPanel implements ActionListener, KeyListener
         float   alpha()    { return 1f - (float)vida / maxVida; }
     }
 
-    // --- Constructor ---
     public PantallaJuego() {
         setPreferredSize(new Dimension(ANCHO, ALTO));
         setBackground(COLOR_BG_DARK);
@@ -90,9 +74,6 @@ public class PantallaJuego extends JPanel implements ActionListener, KeyListener
         gameLoop.start();
     }
 
-    // =====================================================================
-    //  GAME LOOP
-    // =====================================================================
     @Override
     public void actionPerformed(ActionEvent e) {
         actualizar();
@@ -100,26 +81,21 @@ public class PantallaJuego extends JPanel implements ActionListener, KeyListener
     }
 
     private void actualizar() {
-        // Parpadeo cursor en menu
         contadorCursor++;
         if (contadorCursor >= 30) { contadorCursor = 0; cursorVisible = !cursorVisible; }
 
         if (estadoActual == EstadoJuego.JUGANDO) {
-            // Mover canasta
             if (teclaIzquierda) canasta.moverIzquierda();
             if (teclaDerecha)   canasta.moverDerecha();
             canasta.actualizar();
 
-            // Actualizar residuos
             gestor.actualizar(ALTO);
 
-            // Actualizar objetivo en canasta
             Residuo objetivo = gestor.obtenerObjetivoActual();
             if (objetivo != null) {
                 canasta.setTipoObjetivo(objetivo.getTipoNombre(), objetivo.getColor());
             }
 
-            // Verificar colisiones
             List<Residuo> aEliminar = new ArrayList<>();
             for (Residuo r : gestor.getResiduosActivos()) {
                 if (!r.isActivo()) {
@@ -127,31 +103,22 @@ public class PantallaJuego extends JPanel implements ActionListener, KeyListener
                     continue;
                 }
 
-            // ... dentro de tu ciclo for de colisiones ...
 
-            // --- CORRECCIÓN AQUÍ ---
-            // Obtenemos el objetivo actual
             String objetivoActual = canasta.getTipoObjetivo();
 
-            // Solo verificamos colisiones si tenemos un objetivo válido (no nulo ni vacío)
             if (objetivoActual != null && !objetivoActual.isEmpty()) {
     
-            // Colision con canasta
             if (r.colisionaCon(canasta)) {
         
-             // Verificamos si es el correcto
              if (r.getTipoNombre().equals(objetivoActual)) {
             jugador.sumarPuntos(10);
             mostrarMensaje("+10 PUNTOS!", COLOR_VERDE);
             generarParticulas((int)r.getX(), (int)r.getY(), COLOR_VERDE, 12);
             gestor.cambiarObjetivoAleatorio(); // Cambia el objetivo al acertar
             } else {
-            // LÓGICA DE PENALIZACIÓN
             jugador.perderVida();
             mostrarMensaje("¡ERROR! -1 VIDA", COLOR_ROJO);
             generarParticulas((int)r.getX(), (int)r.getY(), COLOR_ROJO, 10);
-            // IMPORTANTE: Si fallas, también deberías cambiar el objetivo 
-            // o eliminar el residuo para que no siga restando vidas en el siguiente frame
             gestor.cambiarObjetivoAleatorio(); 
              }
         
@@ -160,7 +127,6 @@ public class PantallaJuego extends JPanel implements ActionListener, KeyListener
                  }
                                                                                 }
 
-                // Residuo objetivo cayo al suelo sin ser atrapado
                 if (r.getY() > ALTO - 40 && !r.isActivo() == false) {
                     if (r.getTipoNombre().equals(canasta.getTipoObjetivo())) {
                         jugador.perderVida();
@@ -175,27 +141,22 @@ public class PantallaJuego extends JPanel implements ActionListener, KeyListener
             }
             gestor.getResiduosActivos().removeAll(aEliminar);
 
-            // Verificar game over
             if (!jugador.estaVivo()) {
                 jugador.guardarEnRanking();
                 estadoActual = EstadoJuego.GAME_OVER;
             }
 
-            // Actualizar feedback
             if (mostrarFeedback) {
                 contadorFeedback++;
                 if (contadorFeedback > 60) { mostrarFeedback = false; contadorFeedback = 0; }
             }
         }
 
-        // Actualizar particulas
         particulas.removeIf(p -> !p.estaViva());
         for (Particula p : particulas) p.actualizar();
     }
 
-    // =====================================================================
-    //  RENDERIZADO
-    // =====================================================================
+    
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -210,19 +171,14 @@ public class PantallaJuego extends JPanel implements ActionListener, KeyListener
         }
     }
 
-    // -------------------------------------------------------
-    // PANTALLA: MENU
-    // -------------------------------------------------------
+    
     private void dibujarMenu(Graphics2D g2d) {
-        // Fondo con gradiente
         GradientPaint bgGrad = new GradientPaint(0, 0, COLOR_BG_DARK, 0, ALTO, new Color(5, 40, 20));
         g2d.setPaint(bgGrad);
         g2d.fillRect(0, 0, ANCHO, ALTO);
 
-        // Estrellas de fondo
         dibujarEstrellas(g2d);
 
-        // Panel central
         int pw = 380, ph = 320;
         int px = ANCHO/2 - pw/2, py = ALTO/2 - ph/2 - 20;
 
@@ -232,14 +188,11 @@ public class PantallaJuego extends JPanel implements ActionListener, KeyListener
         g2d.setStroke(new BasicStroke(2f));
         g2d.draw(new RoundRectangle2D.Double(px, py, pw, ph, 20, 20));
 
-        // Titulo WasteCat
         g2d.setFont(new Font("Serif", Font.BOLD | Font.ITALIC, 52));
         String titulo = "WasteCat";
         int tw = g2d.getFontMetrics().stringWidth(titulo);
-        // Sombra del titulo
         g2d.setColor(new Color(30, 120, 60, 100));
         g2d.drawString(titulo, ANCHO/2 - tw/2 + 3, py + 68);
-        // Titulo con gradiente
         GradientPaint titleGrad = new GradientPaint(
             ANCHO/2 - tw/2, py + 20, COLOR_VERDE,
             ANCHO/2 + tw/2, py + 70, new Color(160, 255, 200)
@@ -247,24 +200,20 @@ public class PantallaJuego extends JPanel implements ActionListener, KeyListener
         g2d.setPaint(titleGrad);
         g2d.drawString(titulo, ANCHO/2 - tw/2, py + 65);
 
-        // Subtitulo
         g2d.setFont(new Font("Monospaced", Font.PLAIN, 13));
         g2d.setColor(new Color(150, 200, 160));
         String sub = "El reto de la Economia Circular";
         g2d.drawString(sub, ANCHO/2 - g2d.getFontMetrics().stringWidth(sub)/2, py + 90);
 
-        // Separador
         g2d.setColor(new Color(60, 180, 80, 80));
         g2d.setStroke(new BasicStroke(1f));
         g2d.drawLine(px + 30, py + 105, px + pw - 30, py + 105);
 
-        // Label alias
         g2d.setFont(new Font("Monospaced", Font.BOLD, 12));
         g2d.setColor(new Color(180, 220, 190));
         String labelAlias = "INGRESE SU ALIAS (e.g., EcoPlayer):";
         g2d.drawString(labelAlias, ANCHO/2 - g2d.getFontMetrics().stringWidth(labelAlias)/2, py + 135);
 
-        // Campo de texto
         int fx = px + 40, fy = py + 148, fw = pw - 80, fh = 36;
         g2d.setColor(new Color(255, 255, 255, 15));
         g2d.fillRoundRect(fx, fy, fw, fh, 8, 8);
@@ -277,7 +226,6 @@ public class PantallaJuego extends JPanel implements ActionListener, KeyListener
         String displayAlias = inputAlias + (cursorVisible ? "|" : " ");
         g2d.drawString(displayAlias, fx + 10, fy + 24);
 
-        // Selector de dificultad
         g2d.setFont(new Font("Monospaced", Font.BOLD, 11));
         g2d.setColor(new Color(150, 200, 160));
         g2d.drawString("DIFICULTAD (Usa <- y -> para cambiar):", ANCHO/2 - 140, py + 215);
@@ -299,14 +247,12 @@ public class PantallaJuego extends JPanel implements ActionListener, KeyListener
             g2d.setStroke(new BasicStroke(i == dificultadSeleccionada ? 2.5f : 1.5f));
             g2d.drawRoundRect(bx, by2, bw2, bh2, 6, 6);
             
-            // Texto del botón
             g2d.setColor(i == dificultadSeleccionada ? Color.WHITE : cols[i]);
             g2d.setFont(new Font("Monospaced", Font.BOLD, 11));
             int tw2 = g2d.getFontMetrics().stringWidth(difs[i]);
             g2d.drawString(difs[i], bx + bw2/2 - tw2/2, by2 + 17);
         }
 
-        // Boton JUGAR
         int btnX = px + 70, btnY = py + 260, btnW = pw - 140, btnH = 42;
         GradientPaint btnGrad = new GradientPaint(btnX, btnY, COLOR_VERDE_OSC, btnX, btnY + btnH, new Color(20, 100, 50));
         g2d.setPaint(btnGrad);
@@ -320,39 +266,30 @@ public class PantallaJuego extends JPanel implements ActionListener, KeyListener
         String btnTxt = "JUGAR PARTIDA";
         g2d.drawString(btnTxt, ANCHO/2 - g2d.getFontMetrics().stringWidth(btnTxt)/2, btnY + 27);
 
-        // Instrucciones
         g2d.setFont(new Font("Monospaced", Font.PLAIN, 10));
         g2d.setColor(new Color(100, 140, 110));
         g2d.drawString("Escribe tu alias y presiona ENTER para jugar", ANCHO/2 - 140, ALTO - 25);
         g2d.drawString("Usa las flechas <- -> para mover la canasta", ANCHO/2 - 135, ALTO - 12);
     }
 
-    // -------------------------------------------------------
-    // PANTALLA: JUEGO ACTIVO
-    // -------------------------------------------------------
     private void dibujarJuego(Graphics2D g2d) {
-        // Fondo
         GradientPaint bgGrad = new GradientPaint(0, 0, COLOR_BG_DARK, 0, ALTO, new Color(5, 20, 40));
         g2d.setPaint(bgGrad);
         g2d.fillRect(0, 0, ANCHO, ALTO);
 
-        // Cuadricula de fondo sutil
         g2d.setColor(new Color(255, 255, 255, 5));
         g2d.setStroke(new BasicStroke(0.5f));
         for (int x = 0; x < ANCHO; x += 40) g2d.drawLine(x, 0, x, ALTO);
         for (int y = 0; y < ALTO; y += 40) g2d.drawLine(0, y, ANCHO, y);
 
-        // Dibujar residuos usando polimorfismo
         for (Residuo r : gestor.getResiduosActivos()) {
             if (r.isActivo()) {
-                r.dibujar(g2d); // POLIMORFISMO: cada tipo se dibuja diferente
+                r.dibujar(g2d); 
             }
         }
 
-        // Dibujar canasta + gato
         canasta.dibujar(g2d);
 
-        // Dibujar particulas
         for (Particula p : particulas) {
             g2d.setColor(new Color(
                 p.color.getRed(), p.color.getGreen(), p.color.getBlue(),
@@ -361,10 +298,8 @@ public class PantallaJuego extends JPanel implements ActionListener, KeyListener
             g2d.fillOval((int)p.x - 3, (int)p.y - 3, 6, 6);
         }
 
-        // HUD - Header
         dibujarHUD(g2d);
 
-        // Feedback flotante
         if (mostrarFeedback) {
             float alpha = contadorFeedback < 20 ? contadorFeedback / 20f :
                           contadorFeedback > 45 ? 1f - (contadorFeedback - 45) / 15f : 1f;
@@ -377,7 +312,6 @@ public class PantallaJuego extends JPanel implements ActionListener, KeyListener
             g2d.drawString(mensajeFeedback, ANCHO/2 - mw/2, ALTO/2 - 40);
         }
 
-        // Linea del suelo
         g2d.setColor(new Color(255, 80, 80, 80));
         g2d.setStroke(new BasicStroke(2f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{8, 4}, 0));
         g2d.drawLine(0, ALTO - 35, ANCHO, ALTO - 35);
@@ -387,14 +321,12 @@ public class PantallaJuego extends JPanel implements ActionListener, KeyListener
     }
 
     private void dibujarHUD(Graphics2D g2d) {
-        // Barra superior
         g2d.setColor(new Color(0, 0, 0, 160));
         g2d.fillRect(0, 0, ANCHO, 55);
         g2d.setColor(new Color(60, 200, 100, 60));
         g2d.setStroke(new BasicStroke(1f));
         g2d.drawLine(0, 55, ANCHO, 55);
 
-        // Puntaje
         g2d.setFont(new Font("Monospaced", Font.BOLD, 11));
         g2d.setColor(new Color(150, 200, 160));
         g2d.drawString("PUNTAJE", 20, 18);
@@ -403,19 +335,16 @@ public class PantallaJuego extends JPanel implements ActionListener, KeyListener
         g2d.setPaint(scoreGrad);
         g2d.drawString(String.valueOf(jugador.getPuntaje()), 20, 44);
 
-        // Nombre jugador (centro)
         g2d.setFont(new Font("Monospaced", Font.BOLD, 13));
         g2d.setColor(new Color(180, 220, 200));
         String nombre = jugador.getNombreJugador();
         g2d.drawString(nombre, ANCHO/2 - g2d.getFontMetrics().stringWidth(nombre)/2, 32);
 
-        // Dificultad
         g2d.setFont(new Font("Monospaced", Font.PLAIN, 10));
         g2d.setColor(new Color(120, 160, 130));
         String dif = "DIF: " + gestor.getDificultad().name();
         g2d.drawString(dif, ANCHO/2 - g2d.getFontMetrics().stringWidth(dif)/2, 46);
 
-        // Vidas (corazones)
         g2d.setFont(new Font("Monospaced", Font.BOLD, 11));
         g2d.setColor(new Color(150, 200, 160));
         g2d.drawString("VIDAS", ANCHO - 100, 18);
@@ -434,9 +363,7 @@ public class PantallaJuego extends JPanel implements ActionListener, KeyListener
         g2d.fillPolygon(xp, yp, 3);
     }
 
-    // -------------------------------------------------------
-    // PANTALLA: GAME OVER / RANKING
-    // -------------------------------------------------------
+
     private void dibujarGameOver(Graphics2D g2d) {
         GradientPaint bgGrad = new GradientPaint(0, 0, new Color(30, 5, 5), 0, ALTO, COLOR_BG_DARK);
         g2d.setPaint(bgGrad);
@@ -444,25 +371,20 @@ public class PantallaJuego extends JPanel implements ActionListener, KeyListener
 
         dibujarEstrellas(g2d);
 
-        // Titulo game over
         g2d.setFont(new Font("Serif", Font.BOLD | Font.ITALIC, 62));
         String go = "GAME OVER";
         int gw = g2d.getFontMetrics().stringWidth(go);
-        // Sombra
         g2d.setColor(new Color(150, 0, 0, 80));
         g2d.drawString(go, ANCHO/2 - gw/2 + 4, 90);
-        // Texto
         GradientPaint goGrad = new GradientPaint(ANCHO/2 - gw/2, 40, COLOR_ROJO, ANCHO/2 + gw/2, 90, new Color(255, 150, 150));
         g2d.setPaint(goGrad);
         g2d.drawString(go, ANCHO/2 - gw/2, 86);
 
-        // Puntaje final del jugador
         g2d.setFont(new Font("Monospaced", Font.BOLD, 16));
         g2d.setColor(new Color(200, 200, 200));
         String resumen = jugador.getNombreJugador() + " - Puntaje Final: " + jugador.getPuntaje();
         g2d.drawString(resumen, ANCHO/2 - g2d.getFontMetrics().stringWidth(resumen)/2, 120);
 
-        // Panel de ranking
         int pw = 420, ph = 310;
         int px = ANCHO/2 - pw/2, py = 140;
 
@@ -472,18 +394,15 @@ public class PantallaJuego extends JPanel implements ActionListener, KeyListener
         g2d.setStroke(new BasicStroke(1.5f));
         g2d.draw(new RoundRectangle2D.Double(px, py, pw, ph, 16, 16));
 
-        // Titulo ranking
         g2d.setFont(new Font("Monospaced", Font.BOLD, 14));
         GradientPaint rankGrad = new GradientPaint(px, py + 20, COLOR_AMARILLO, px + pw, py + 40, new Color(255, 180, 60));
         g2d.setPaint(rankGrad);
         String rankTit = "RANKING GLOBAL";
         g2d.drawString(rankTit, ANCHO/2 - g2d.getFontMetrics().stringWidth(rankTit)/2, py + 28);
 
-        // Separador
         g2d.setColor(new Color(180, 140, 40, 80));
         g2d.drawLine(px + 20, py + 36, px + pw - 20, py + 36);
 
-        // Headers tabla
         g2d.setFont(new Font("Monospaced", Font.BOLD, 11));
         g2d.setColor(new Color(150, 150, 150));
         g2d.drawString("POS", px + 20, py + 56);
@@ -491,7 +410,6 @@ public class PantallaJuego extends JPanel implements ActionListener, KeyListener
         g2d.drawString("PUNTAJE", px + pw - 100, py + 56);
         g2d.drawLine(px + 20, py + 62, px + pw - 20, py + 62);
 
-        // Filas de ranking
         List<Jugador.EntradaRanking> ranking = Jugador.getRankingGlobal();
         Color[] posColors = {COLOR_AMARILLO, new Color(200, 200, 200), new Color(180, 120, 60), Color.WHITE, Color.WHITE};
 
@@ -499,7 +417,6 @@ public class PantallaJuego extends JPanel implements ActionListener, KeyListener
             Jugador.EntradaRanking entrada = ranking.get(i);
             int rowY = py + 82 + i * 42;
 
-            // Resaltar la entrada del jugador actual
             if (entrada.nombre.equals(jugador.getNombreJugador()) && entrada.puntaje == jugador.getPuntaje()) {
                 g2d.setColor(new Color(60, 200, 100, 25));
                 g2d.fillRoundRect(px + 15, rowY - 18, pw - 30, 34, 6, 6);
@@ -528,7 +445,6 @@ public class PantallaJuego extends JPanel implements ActionListener, KeyListener
             g2d.drawString("Sin registros aun", ANCHO/2 - 70, py + 100);
         }
 
-        // Boton volver al menu
         int btnX = ANCHO/2 - 110, btnY = py + ph + 20, btnW = 220, btnH = 44;
         GradientPaint btnGrad = new GradientPaint(btnX, btnY, new Color(60, 20, 20), btnX, btnY + btnH, new Color(120, 30, 30));
         g2d.setPaint(btnGrad);
@@ -542,9 +458,7 @@ public class PantallaJuego extends JPanel implements ActionListener, KeyListener
         g2d.drawString(btnTxt, ANCHO/2 - g2d.getFontMetrics().stringWidth(btnTxt)/2, btnY + 28);
     }
 
-    // -------------------------------------------------------
-    // HELPER: Estrellas decorativas de fondo
-    // -------------------------------------------------------
+
     private void dibujarEstrellas(Graphics2D g2d) {
         Random rng = new Random(42);
         for (int i = 0; i < 80; i++) {
@@ -555,9 +469,7 @@ public class PantallaJuego extends JPanel implements ActionListener, KeyListener
         }
     }
 
-    // =====================================================================
-    //  INICIO DE PARTIDA
-    // =====================================================================
+   
     private void iniciarPartida(Velocidad_Por_Dificultad dificultad) {
         String alias = inputAlias.trim().isEmpty() ? "EcoPlayer" : inputAlias.trim();
         jugador = new Jugador(alias);
@@ -567,9 +479,7 @@ public class PantallaJuego extends JPanel implements ActionListener, KeyListener
         particulas.clear();
     }
 
-    // =====================================================================
-    //  HELPERS
-    // =====================================================================
+    
     private void mostrarMensaje(String msg, Color color) {
         mensajeFeedback  = msg;
         colorFeedback    = color;
@@ -583,9 +493,7 @@ public class PantallaJuego extends JPanel implements ActionListener, KeyListener
         }
     }
 
-    // =====================================================================
-    //  TECLADO
-    // =====================================================================
+    
     @Override
     public void keyPressed(KeyEvent e) {
         int code = e.getKeyCode();
@@ -596,7 +504,6 @@ public class PantallaJuego extends JPanel implements ActionListener, KeyListener
             } else if (code == KeyEvent.VK_RIGHT) {
                 dificultadSeleccionada = Math.min(2, dificultadSeleccionada + 1);
             } else if (code == KeyEvent.VK_ENTER) {
-                // Iniciar partida
                 Velocidad_Por_Dificultad dif = Velocidad_Por_Dificultad.values()[dificultadSeleccionada];
                 iniciarPartida(dif);
             } else if (code == KeyEvent.VK_BACK_SPACE) {
@@ -606,7 +513,6 @@ public class PantallaJuego extends JPanel implements ActionListener, KeyListener
         }
 
         if (estadoActual == EstadoJuego.JUGANDO) {
-            // Aquí sí mantenemos la A y la D junto con las flechas para mover al personaje
             if (code == KeyEvent.VK_LEFT  || code == KeyEvent.VK_A) teclaIzquierda = true;
             if (code == KeyEvent.VK_RIGHT || code == KeyEvent.VK_D) teclaDerecha   = true;
         }
