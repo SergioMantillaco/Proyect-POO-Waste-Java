@@ -38,6 +38,8 @@ public class PantallaJuego extends JPanel implements ActionListener, KeyListener
     private String inputAlias = "";
     private boolean cursorVisible = true;
     private int     contadorCursor = 0;
+    private int     dificultadSeleccionada = 0; // 0=FACIL, 1=MEDIO, 2=DIFICIL
+    
 
     // --- Feedback visual ---
     private String  mensajeFeedback    = "";
@@ -257,17 +259,27 @@ public class PantallaJuego extends JPanel implements ActionListener, KeyListener
         // Selector de dificultad
         g2d.setFont(new Font("Monospaced", Font.BOLD, 11));
         g2d.setColor(new Color(150, 200, 160));
-        g2d.drawString("DIFICULTAD:", ANCHO/2 - 120, py + 215);
+        g2d.drawString("DIFICULTAD (Usa <- y -> para cambiar):", ANCHO/2 - 140, py + 215);
 
         String[] difs = {"FACIL", "MEDIO", "DIFICIL"};
         Color[]  cols = {COLOR_VERDE, COLOR_AMARILLO, COLOR_ROJO};
+        
         for (int i = 0; i < difs.length; i++) {
             int bx = px + 40 + i * 100, by2 = py + 220, bw2 = 85, bh2 = 26;
-            g2d.setColor(new Color(cols[i].getRed(), cols[i].getGreen(), cols[i].getBlue(), 30));
+            
+            if (i == dificultadSeleccionada) {
+                g2d.setColor(new Color(cols[i].getRed(), cols[i].getGreen(), cols[i].getBlue(), 180));
+            } else {
+                g2d.setColor(new Color(cols[i].getRed(), cols[i].getGreen(), cols[i].getBlue(), 30));
+            }
+            
             g2d.fillRoundRect(bx, by2, bw2, bh2, 6, 6);
             g2d.setColor(cols[i]);
-            g2d.setStroke(new BasicStroke(1.5f));
+            g2d.setStroke(new BasicStroke(i == dificultadSeleccionada ? 2.5f : 1.5f));
             g2d.drawRoundRect(bx, by2, bw2, bh2, 6, 6);
+            
+            // Texto del botón
+            g2d.setColor(i == dificultadSeleccionada ? Color.WHITE : cols[i]);
             g2d.setFont(new Font("Monospaced", Font.BOLD, 11));
             int tw2 = g2d.getFontMetrics().stringWidth(difs[i]);
             g2d.drawString(difs[i], bx + bw2/2 - tw2/2, by2 + 17);
@@ -558,18 +570,19 @@ public class PantallaJuego extends JPanel implements ActionListener, KeyListener
         int code = e.getKeyCode();
 
         if (estadoActual == EstadoJuego.MENU) {
-            if (code == KeyEvent.VK_ENTER) {
-                // ENTER: inicia con dificultad FACIL por defecto
-                iniciarPartida(Velocidad_Por_Dificultad.FACIL);
+            if (code == KeyEvent.VK_LEFT || code == KeyEvent.VK_A) {
+                // Mover selección a la izquierda
+                dificultadSeleccionada = Math.max(0, dificultadSeleccionada - 1);
+            } else if (code == KeyEvent.VK_RIGHT || code == KeyEvent.VK_D) {
+                // Mover selección a la derecha
+                dificultadSeleccionada = Math.min(2, dificultadSeleccionada + 1);
+            } else if (code == KeyEvent.VK_ENTER) {
+                // Iniciar partida con la dificultad seleccionada visualmente
+                Velocidad_Por_Dificultad dif = Velocidad_Por_Dificultad.values()[dificultadSeleccionada];
+                iniciarPartida(dif);
             } else if (code == KeyEvent.VK_BACK_SPACE) {
                 if (!inputAlias.isEmpty())
                     inputAlias = inputAlias.substring(0, inputAlias.length() - 1);
-            } else if (code == KeyEvent.VK_1) {
-                iniciarPartida(Velocidad_Por_Dificultad.FACIL);
-            } else if (code == KeyEvent.VK_2) {
-                iniciarPartida(Velocidad_Por_Dificultad.MEDIO);
-            } else if (code == KeyEvent.VK_3) {
-                iniciarPartida(Velocidad_Por_Dificultad.DIFICIL);
             }
         }
 
