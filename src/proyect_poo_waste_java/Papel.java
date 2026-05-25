@@ -4,6 +4,7 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.net.URL;
 
 /**
  * Subclase concreta de Residuo que representa PAPEL.
@@ -28,6 +29,7 @@ public class Papel extends Residuo {
     @Override
     public void dibujar(Graphics2D g2d) {
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+       
 
         // Sombra
         g2d.setColor(new Color(0, 0, 0, 60));
