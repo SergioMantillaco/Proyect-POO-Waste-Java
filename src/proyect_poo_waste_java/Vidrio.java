@@ -1,10 +1,10 @@
 package proyect_poo_waste_java;
 
-import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.GradientPaint;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import javax.swing.ImageIcon;
+import java.net.URL;
 
 /**
  * Subclase concreta de Residuo que representa VIDRIO.
@@ -28,41 +28,33 @@ public class Vidrio extends Residuo {
     public void dibujar(Graphics2D g2d) {
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        // Sombra
-        g2d.setColor(new Color(0, 0, 0, 60));
-        g2d.fillRoundRect((int)posicionx + 3, (int)posiciony + 3, (int)ancho - 4, (int)alto, 12, 12);
+        int rx = (int) posicionx;
+        int ry = (int) posiciony;
 
-        // Cuerpo botella de vidrio con transparencia
-        GradientPaint gp = new GradientPaint(
-            (float)posicionx, (float)posiciony, new Color(140, 230, 160, 220),
-            (float)(posicionx + ancho), (float)(posiciony + alto), new Color(50, 150, 80, 200)
-        );
-        g2d.setPaint(gp);
-        g2d.fillRoundRect((int)posicionx, (int)posiciony + 5, (int)ancho - 6, (int)alto - 5, 12, 12);
+        // Carga y desacoplamiento del componente visual (Sprite)
+        URL rutaImagen = getClass().getResource("/Imagenes/vidrio.png");
+        
+        if (rutaImagen != null) {
+            ImageIcon spriteVidrio = new ImageIcon(rutaImagen);
+            g2d.drawImage(spriteVidrio.getImage(), rx, ry, (int)ancho, (int)alto, null);
+        } else {
+            // Mecanismo de contingencia visual ante ausencia del recurso en memoria
+            g2d.setColor(Color.RED);
+            g2d.fillRect(rx, ry, (int)ancho, (int)alto);
+            System.err.println("Error de Recursos: No se localizó /Imagenes/vidrio.png");
+        }
 
-        // Cuello de botella
-        g2d.setColor(new Color(80, 180, 100, 220));
-        g2d.fillRoundRect((int)posicionx + 9, (int)posiciony, (int)ancho - 24, 10, 4, 4);
-
-        // Tapa metalica
-        g2d.setColor(new Color(200, 200, 200));
-        g2d.fillRoundRect((int)posicionx + 8, (int)posiciony - 4, (int)ancho - 22, 7, 3, 3);
-
-        // Brillo vidrio (efecto transparencia)
-        g2d.setColor(new Color(255, 255, 255, 80));
-        g2d.fillRoundRect((int)posicionx + 4, (int)posiciony + 10, 5, 18, 3, 3);
-
-        // Borde
-        g2d.setColor(new Color(60, 160, 80));
-        g2d.setStroke(new BasicStroke(1.2f));
-        g2d.drawRoundRect((int)posicionx, (int)posiciony + 5, (int)ancho - 6, (int)alto - 5, 12, 12);
-
+        // Renderizado de la etiqueta de texto flotante (HUD integrado)
         dibujarLabel(g2d, "VIDRIO", COLOR_VIDRIO);
     }
 
     @Override
-    public String getTipoNombre() { return "VIDRIO"; }
+    public String getTipoNombre() { 
+        return "VIDRIO"; 
+    }
 
     @Override
-    public Color getColor() { return COLOR_VIDRIO; }
+    public Color getColor() { 
+        return COLOR_VIDRIO; 
+    }
 }

@@ -1,6 +1,6 @@
 package proyect_poo_waste_java;
 
-import java.awt.BasicStroke;
+import javax.swing.ImageIcon;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
@@ -29,35 +29,34 @@ public class Papel extends Residuo {
     @Override
     public void dibujar(Graphics2D g2d) {
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-       
 
-        // Sombra
-        g2d.setColor(new Color(0, 0, 0, 60));
-        g2d.fillRoundRect((int)posicionx + 3, (int)posiciony + 3, (int)ancho, (int)alto, 4, 4);
+        int rx = (int) posicionx;
+        int ry = (int) posiciony;
 
-        // Cuerpo del papel
-        g2d.setColor(COLOR_PAPEL);
-        g2d.fillRoundRect((int)posicionx, (int)posiciony, (int)ancho, (int)alto, 4, 4);
-
-        // Borde
-        g2d.setColor(new Color(200, 170, 50));
-        g2d.setStroke(new BasicStroke(1.5f));
-        g2d.drawRoundRect((int)posicionx, (int)posiciony, (int)ancho, (int)alto, 4, 4);
-
-        // Lineas de texto simuladas
-        g2d.setColor(new Color(180, 140, 30));
-        g2d.setStroke(new BasicStroke(1f));
-        for (int i = 0; i < 4; i++) {
-            int ly = (int)posiciony + 8 + i * 7;
-            g2d.drawLine((int)posicionx + 5, ly, (int)posicionx + (int)ancho - 5, ly);
+        // Carga y desacoplamiento del componente visual (Sprite)
+        URL rutaImagen = getClass().getResource("/Imagenes/papel.png");
+        
+        if (rutaImagen != null) {
+            ImageIcon spritePapel = new ImageIcon(rutaImagen);
+            g2d.drawImage(spritePapel.getImage(), rx, ry, (int)ancho, (int)alto, null);
+        } else {
+            // Mecanismo de contingencia visual ante ausencia del recurso en memoria
+            g2d.setColor(Color.RED);
+            g2d.fillRect(rx, ry, (int)ancho, (int)alto);
+            System.err.println("Error de Recursos: No se localizó /Imagenes/papel.png");
         }
 
+        // Renderizado de la etiqueta de texto flotante (HUD integrado)
         dibujarLabel(g2d, "PAPEL", COLOR_PAPEL);
     }
 
     @Override
-    public String getTipoNombre() { return "PAPEL"; }
+    public String getTipoNombre() { 
+        return "PAPEL"; 
+    }
 
     @Override
-    public Color getColor() { return COLOR_PAPEL; }
+    public Color getColor() { 
+        return COLOR_PAPEL; 
+    }
 }
