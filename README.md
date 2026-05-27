@@ -13,4 +13,4 @@ UML: https://correouisedu-my.sharepoint.com/:u:/g/personal/andres2252220_correo_
 UML de la primera entrega: https://correouisedu-my.sharepoint.com/:u:/g/personal/sergio2252231_correo_uis_edu_co/IQDihj0dkj2DQof_ZhxemkUEAdP18o1Nuw9DbyPkHxBoRb0?e=73GFdz&action=edit&or=PrevEdit
 
 
-documento: https://docs.google.com/document/d/1KbsyIJaHILt_zsTRHkmC2cFwMnbGKT_B4UPFMGuVKwc/edit?tab=t.0
+documento: https://1drv.ms/w/c/a35fa8e8d60312b2/IQC9MxWAVynvSIpHDvrJ2BZEAUCfXFknSm4lY7d_elyGGWo?e=qRjRxi
